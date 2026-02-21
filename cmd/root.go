@@ -1,0 +1,21 @@
+package cmd
+
+import (
+	"github.com/zamedic/labrador-cli/cmd/api"
+	"github.com/zamedic/labrador-cli/cmd/auth"
+
+	"github.com/spf13/cobra"
+)
+
+var RootCmd = cobra.Command{
+	Use: "labradoc",
+}
+
+func Execute() {
+	cobra.CheckErr(RootCmd.Execute())
+}
+
+func init() {
+	RootCmd.AddCommand(auth.RootCmd)
+	RootCmd.AddCommand(api.RootCmd)
+}
