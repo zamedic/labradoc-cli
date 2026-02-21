@@ -6,6 +6,7 @@ name: Go
 on:
   push:
     branches: [ "main" ]
+    tags: [ "v*" ]
   pull_request:
     branches: [ "main" ]
 
@@ -26,21 +27,50 @@ jobs:
 
     - name: Test
       run: go test -v ./...
-    - name: GoReleaser Action
-      # You may pin to the exact commit or the version.
-      # uses: goreleaser/goreleaser-action@ec59f474b9834571250b370d4735c50f8e2d1e29
-      uses: goreleaser/goreleaser-action@v7.0.0
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    strategy:
+      matrix:
+        include:
+          - goos: linux
+            goarch: amd64
+            ext: ""
+          - goos: linux
+            goarch: arm64
+            ext: ""
+          - goos: darwin
+            goarch: amd64
+            ext: ""
+          - goos: darwin
+            goarch: arm64
+            ext: ""
+          - goos: windows
+            goarch: amd64
+            ext: ".exe"
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
       with:
-        # GoReleaser Distribution (goreleaser or goreleaser-pro)
-        #distribution: # optional, default is goreleaser
-        # GoReleaser version
-        #version: # optional, default is ~> v2
-        # Arguments to pass to GoReleaser
-        args: release --snapshot
-        # Working directory (below repository root)
-        #workdir: # optional, default is .
-        # Just install GoReleaser
-        #install-only: # optional, default is false
+        go-version: '1.26'
+
+    - name: Build release binary
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-               
+        CGO_ENABLED: "0"
+        GOOS: ${{ matrix.goos }}
+        GOARCH: ${{ matrix.goarch }}
+      run: |
+        mkdir -p dist
+        output="dist/labradoc-cli_${{ matrix.goos }}_${{ matrix.goarch }}${{ matrix.ext }}"
+        go build -trimpath -ldflags="-s -w" -o "$output" .
+
+    - name: Upload to GitHub Release
+      uses: softprops/action-gh-release@v2
+      with:
+        files: dist/*
+        fail_on_unmatched_files: true
