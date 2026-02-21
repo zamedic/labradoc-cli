@@ -2,6 +2,7 @@ package api
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"mime/multipart"
@@ -30,6 +31,7 @@ var (
 var filesListCmd = &cobra.Command{
 	Use:   "list",
 	Short: "List files",
+	Long:  "Retrieves list of files.",
 	RunE: func(cmd *cobra.Command, _ []string) error {
 		opts, err := resolveAPIConfig()
 		if err != nil {
@@ -77,7 +79,8 @@ var (
 
 var filesUploadCmd = &cobra.Command{
 	Use:   "upload",
-	Short: "Upload a file",
+	Short: "Upload files",
+	Long:  "Uploads files.",
 	RunE: func(cmd *cobra.Command, _ []string) error {
 		if uploadFilePath == "" {
 			return fmt.Errorf("missing --file")
@@ -134,7 +137,7 @@ var (
 
 var filesGetCmd = &cobra.Command{
 	Use:   "get",
-	Short: "Get file metadata",
+	Short: "Get file",
 	RunE: func(cmd *cobra.Command, _ []string) error {
 		if fileID == "" {
 			return fmt.Errorf("missing --id")
@@ -156,7 +159,7 @@ var filesContentCmd = &cobra.Command{
 
 var filesOcrCmd = &cobra.Command{
 	Use:   "ocr",
-	Short: "Get OCR text for a file",
+	Short: "Get OCR content for document",
 	RunE: func(cmd *cobra.Command, _ []string) error {
 		if fileID == "" {
 			return fmt.Errorf("missing --id")
@@ -167,7 +170,7 @@ var filesOcrCmd = &cobra.Command{
 
 var filesDownloadCmd = &cobra.Command{
 	Use:   "download",
-	Short: "Download original file",
+	Short: "Download file",
 	RunE: func(cmd *cobra.Command, _ []string) error {
 		if fileID == "" {
 			return fmt.Errorf("missing --id")
@@ -182,39 +185,147 @@ var filesDownloadCmd = &cobra.Command{
 
 var (
 	questionText string
-	questionFile string
+	bodyText     string
+	bodyFile     string
 )
 
 var filesQuestionCmd = &cobra.Command{
 	Use:   "question",
-	Short: "Ask a question about a file",
+	Short: "Ask question about file",
 	RunE: func(cmd *cobra.Command, _ []string) error {
 		if fileID == "" {
 			return fmt.Errorf("missing --id")
 		}
-		body, err := readQuestionBody()
+		body, err := readJSONBody()
 		if err != nil {
 			return err
 		}
 		if body == nil {
-			return fmt.Errorf("missing question body (--question, --body, or --body-file)")
+			return fmt.Errorf("missing request body (--question, --body, or --body-file)")
 		}
-		return simplePost(cmd, fmt.Sprintf("/api/user/files/%s/question", fileID), body, "text/plain", filesOutPath)
+		return simplePost(cmd, fmt.Sprintf("/api/user/files/%s/question", fileID), body, "application/json", filesOutPath)
 	},
 }
 
 var filesSearchCmd = &cobra.Command{
 	Use:   "search",
-	Short: "Search across files using the agent",
+	Short: "Search files using agent",
+	Long:  "Searches files using an AI agent. Returns a streaming response using Server-Sent Events (SSE) that provides real-time feedback as the agent processes the request.",
 	RunE: func(cmd *cobra.Command, _ []string) error {
-		body, err := readQuestionBody()
+		body, err := readJSONBody()
 		if err != nil {
 			return err
 		}
 		if body == nil {
-			return fmt.Errorf("missing question body (--question, --body, or --body-file)")
+			return fmt.Errorf("missing request body (--question, --body, or --body-file)")
 		}
-		return simplePost(cmd, "/api/user/files", body, "text/plain", filesOutPath)
+		return simplePost(cmd, "/api/user/files", body, "application/json", filesOutPath)
+	},
+}
+
+var (
+	archiveID  string
+	archiveIDs []string
+)
+
+var filesArchiveCmd = &cobra.Command{
+	Use:   "archive",
+	Short: "Archive files",
+	Long:  "Archives files by IDs; archived files are excluded from retrieval.",
+	RunE: func(cmd *cobra.Command, _ []string) error {
+		ids := make([]string, 0, len(archiveIDs))
+		if archiveID != "" {
+			ids = append(ids, archiveID)
+		}
+		for _, id := range archiveIDs {
+			if strings.TrimSpace(id) != "" {
+				ids = append(ids, strings.TrimSpace(id))
+			}
+		}
+		if len(ids) == 0 {
+			return fmt.Errorf("missing --id or --ids")
+		}
+		body, err := json.Marshal(map[string]any{"ids": ids})
+		if err != nil {
+			return err
+		}
+		return simplePost(cmd, "/api/user/files/archive", bytes.NewReader(body), "application/json", filesOutPath)
+	},
+}
+
+var filesFieldsCmd = &cobra.Command{
+	Use:   "fields",
+	Short: "Get extracted fields",
+	RunE: func(cmd *cobra.Command, _ []string) error {
+		if fileID == "" {
+			return fmt.Errorf("missing --id")
+		}
+		return simpleGet(cmd, fmt.Sprintf("/api/user/files/%s/fields", fileID), filesOutPath)
+	},
+}
+
+var filesRelatedCmd = &cobra.Command{
+	Use:   "related",
+	Short: "Get related documents",
+	RunE: func(cmd *cobra.Command, _ []string) error {
+		if fileID == "" {
+			return fmt.Errorf("missing --id")
+		}
+		return simpleGet(cmd, fmt.Sprintf("/api/user/files/%s/related", fileID), filesOutPath)
+	},
+}
+
+var filesReprocessCmd = &cobra.Command{
+	Use:   "reprocess",
+	Short: "Reprocess file",
+	RunE: func(cmd *cobra.Command, _ []string) error {
+		if fileID == "" {
+			return fmt.Errorf("missing --id")
+		}
+		return simpleGet(cmd, fmt.Sprintf("/api/user/files/%s/reprocess", fileID), filesOutPath)
+	},
+}
+
+var filesTasksCmd = &cobra.Command{
+	Use:   "tasks",
+	Short: "Get tasks for document",
+	RunE: func(cmd *cobra.Command, _ []string) error {
+		if fileID == "" {
+			return fmt.Errorf("missing --id")
+		}
+		return simpleGet(cmd, fmt.Sprintf("/api/user/files/%s/tasks", fileID), filesOutPath)
+	},
+}
+
+var (
+	imagePageNumber int
+)
+
+var filesImageCmd = &cobra.Command{
+	Use:   "image",
+	Short: "Get file page image",
+	RunE: func(cmd *cobra.Command, _ []string) error {
+		if fileID == "" {
+			return fmt.Errorf("missing --id")
+		}
+		if imagePageNumber <= 0 {
+			return fmt.Errorf("missing or invalid --page")
+		}
+		return simpleGet(cmd, fmt.Sprintf("/api/user/files/%s/image/%d", fileID, imagePageNumber), filesOutPath)
+	},
+}
+
+var filesPreviewCmd = &cobra.Command{
+	Use:   "preview",
+	Short: "Get a smaller preview image of the file",
+	RunE: func(cmd *cobra.Command, _ []string) error {
+		if fileID == "" {
+			return fmt.Errorf("missing --id")
+		}
+		if imagePageNumber <= 0 {
+			return fmt.Errorf("missing or invalid --page")
+		}
+		return simpleGet(cmd, fmt.Sprintf("/api/user/files/%s/image/preview/%d", fileID, imagePageNumber), filesOutPath)
 	},
 }
 
@@ -227,6 +338,13 @@ func init() {
 	filesCmd.AddCommand(filesDownloadCmd)
 	filesCmd.AddCommand(filesQuestionCmd)
 	filesCmd.AddCommand(filesSearchCmd)
+	filesCmd.AddCommand(filesArchiveCmd)
+	filesCmd.AddCommand(filesFieldsCmd)
+	filesCmd.AddCommand(filesRelatedCmd)
+	filesCmd.AddCommand(filesReprocessCmd)
+	filesCmd.AddCommand(filesTasksCmd)
+	filesCmd.AddCommand(filesImageCmd)
+	filesCmd.AddCommand(filesPreviewCmd)
 
 	filesListCmd.Flags().StringSliceVar(&filesStatus, "status", nil, "Filter by status (repeatable)")
 	filesListCmd.Flags().IntVar(&filesPageSize, "page-size", 0, "Page size")
@@ -245,28 +363,55 @@ func init() {
 	filesDownloadCmd.Flags().StringVar(&filesOutPath, "out", "", "Write response to file instead of stdout")
 	filesQuestionCmd.Flags().StringVar(&filesOutPath, "out", "", "Write response to file instead of stdout")
 	filesSearchCmd.Flags().StringVar(&filesOutPath, "out", "", "Write response to file instead of stdout")
+	filesArchiveCmd.Flags().StringVar(&filesOutPath, "out", "", "Write response to file instead of stdout")
+	filesFieldsCmd.Flags().StringVar(&filesOutPath, "out", "", "Write response to file instead of stdout")
+	filesRelatedCmd.Flags().StringVar(&filesOutPath, "out", "", "Write response to file instead of stdout")
+	filesReprocessCmd.Flags().StringVar(&filesOutPath, "out", "", "Write response to file instead of stdout")
+	filesTasksCmd.Flags().StringVar(&filesOutPath, "out", "", "Write response to file instead of stdout")
+	filesImageCmd.Flags().StringVar(&filesOutPath, "out", "", "Write response to file instead of stdout")
+	filesPreviewCmd.Flags().StringVar(&filesOutPath, "out", "", "Write response to file instead of stdout")
 
-	filesQuestionCmd.Flags().StringVar(&questionText, "question", "", "Question text (plain)")
-	filesQuestionCmd.Flags().StringVar(&questionText, "body", "", "Question text (plain)")
-	filesQuestionCmd.Flags().StringVar(&questionFile, "body-file", "", "Question text file ('-' for stdin)")
-	filesSearchCmd.Flags().StringVar(&questionText, "question", "", "Question text (plain)")
-	filesSearchCmd.Flags().StringVar(&questionText, "body", "", "Question text (plain)")
-	filesSearchCmd.Flags().StringVar(&questionFile, "body-file", "", "Question text file ('-' for stdin)")
+	filesQuestionCmd.Flags().StringVar(&questionText, "question", "", "Question text (JSON field: question)")
+	filesQuestionCmd.Flags().StringVar(&bodyText, "body", "", "Request body as a JSON string")
+	filesQuestionCmd.Flags().StringVar(&bodyFile, "body-file", "", "Request body JSON file ('-' for stdin)")
+	filesSearchCmd.Flags().StringVar(&questionText, "question", "", "Question text (JSON field: question)")
+	filesSearchCmd.Flags().StringVar(&bodyText, "body", "", "Request body as a JSON string")
+	filesSearchCmd.Flags().StringVar(&bodyFile, "body-file", "", "Request body JSON file ('-' for stdin)")
+
+	filesArchiveCmd.Flags().StringVar(&archiveID, "id", "", "File ID to archive")
+	filesArchiveCmd.Flags().StringSliceVar(&archiveIDs, "ids", nil, "File IDs to archive (repeatable)")
+
+	filesFieldsCmd.Flags().StringVar(&fileID, "id", "", "File ID")
+	filesRelatedCmd.Flags().StringVar(&fileID, "id", "", "File ID")
+	filesReprocessCmd.Flags().StringVar(&fileID, "id", "", "File ID")
+	filesTasksCmd.Flags().StringVar(&fileID, "id", "", "File ID")
+	filesImageCmd.Flags().StringVar(&fileID, "id", "", "File ID")
+	filesPreviewCmd.Flags().StringVar(&fileID, "id", "", "File ID")
+	filesImageCmd.Flags().IntVar(&imagePageNumber, "page", 0, "Page number")
+	filesPreviewCmd.Flags().IntVar(&imagePageNumber, "page", 0, "Page number")
 }
 
-func readQuestionBody() (io.Reader, error) {
-	if questionFile != "" {
-		if questionFile == "-" {
+func readJSONBody() (io.Reader, error) {
+	if bodyFile != "" {
+		if bodyFile == "-" {
 			return os.Stdin, nil
 		}
-		b, err := os.ReadFile(questionFile)
+		b, err := os.ReadFile(bodyFile)
 		if err != nil {
 			return nil, err
 		}
 		return bytes.NewReader(b), nil
 	}
+	if bodyText != "" {
+		return strings.NewReader(bodyText), nil
+	}
 	if questionText != "" {
-		return strings.NewReader(questionText), nil
+		payload := map[string]string{"question": questionText}
+		b, err := json.Marshal(payload)
+		if err != nil {
+			return nil, err
+		}
+		return bytes.NewReader(b), nil
 	}
 	return nil, nil
 }
@@ -299,6 +444,38 @@ func simplePost(cmd *cobra.Command, path string, body io.Reader, contentType str
 		"Content-Type": contentType,
 	}
 	resp, err := cli.DoRequest(cmd.Context(), "POST", path, body, opts)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	return writeResponse(resp, outPath)
+}
+
+func simplePostNoAuth(cmd *cobra.Command, path string, body io.Reader, contentType string, outPath string) error {
+	opts, err := resolveAPIConfig()
+	if err != nil {
+		return err
+	}
+	opts.Headers = map[string]string{
+		"Content-Type": contentType,
+	}
+	resp, err := cli.DoRequest(cmd.Context(), "POST", path, body, opts)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	return writeResponse(resp, outPath)
+}
+
+func simpleDelete(cmd *cobra.Command, path string, outPath string) error {
+	opts, err := resolveAPIConfig()
+	if err != nil {
+		return err
+	}
+	if opts.APIKey == "" && opts.Token == "" {
+		return fmt.Errorf("missing api token (use --api-token, --token, api_token, or --use-auth-token)")
+	}
+	resp, err := cli.DoRequest(cmd.Context(), "DELETE", path, nil, opts)
 	if err != nil {
 		return err
 	}

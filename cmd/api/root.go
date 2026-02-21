@@ -34,6 +34,12 @@ func init() {
 	RootCmd.AddCommand(requestCmd)
 	RootCmd.AddCommand(filesCmd)
 	RootCmd.AddCommand(tasksCmd)
+	RootCmd.AddCommand(apikeysCmd)
+	RootCmd.AddCommand(userCmd)
+	RootCmd.AddCommand(emailCmd)
+	RootCmd.AddCommand(googleCmd)
+	RootCmd.AddCommand(microsoftCmd)
+	RootCmd.AddCommand(stripeCmd)
 
 	viper.BindPFlag("api_url", RootCmd.PersistentFlags().Lookup("api-url"))
 	viper.BindPFlag("api_token", RootCmd.PersistentFlags().Lookup("api-token"))

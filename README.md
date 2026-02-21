@@ -1,6 +1,6 @@
 # Labradoc CLI
 
-Command-line client for Labradoc authentication and API operations (tasks and files).
+Command-line client for Labradoc authentication and API operations (tasks, files, user settings, API keys, email, integrations, and billing).
 
 ## Requirements
 
@@ -124,8 +124,71 @@ labradoc api files get --id <file-id>
 labradoc api files content --id <file-id> --out content.txt
 labradoc api files ocr --id <file-id>
 labradoc api files download --id <file-id> --out original.pdf
-labradoc api files question --id <file-id> --question "What is the due date?"
-labradoc api files search --question "Find all invoices from Acme"
+labradoc api files fields --id <file-id>
+labradoc api files related --id <file-id>
+labradoc api files reprocess --id <file-id>
+labradoc api files tasks --id <file-id>
+labradoc api files image --id <file-id> --page 1 --out page-1.png
+labradoc api files preview --id <file-id> --page 1 --out page-1-preview.png
+labradoc api files archive --id <file-id>
+labradoc api files question --id <file-id> --body '{"question":"What is the due date?"}'
+labradoc api files search --body '{"question":"Find all invoices from Acme"}'
+```
+
+Note: `files search` returns a Server-Sent Events (SSE) stream.
+
+User:
+
+```bash
+labradoc api user credits
+labradoc api user stats
+labradoc api user language get
+labradoc api user language set --language en
+```
+
+API keys:
+
+```bash
+labradoc api apikeys list
+labradoc api apikeys create --name "CI token" --expires-at 2026-06-01T00:00:00Z
+labradoc api apikeys revoke --id <key-id>
+```
+
+Email:
+
+```bash
+labradoc api email addresses
+labradoc api email request --description "Inbound invoices"
+labradoc api email list
+labradoc api email body --id <email-id> --index 1 --out body.eml
+```
+
+Google integrations:
+
+```bash
+labradoc api google drive status
+labradoc api google drive token --scope "https://www.googleapis.com/auth/drive.readonly"
+labradoc api google drive code --code <oauth-code>
+labradoc api google drive refresh
+labradoc api google drive revoke
+labradoc api google gmail status
+labradoc api google gmail token
+labradoc api google gmail code --code <oauth-code>
+labradoc api google gmail revoke
+```
+
+Microsoft integrations:
+
+```bash
+labradoc api microsoft outlook token
+labradoc api microsoft outlook code --code <oauth-code>
+```
+
+Billing:
+
+```bash
+labradoc api stripe checkout
+labradoc api stripe pages-checkout
 ```
 
 ## Notes

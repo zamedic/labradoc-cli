@@ -52,7 +52,8 @@ var (
 
 var tasksCloseCmd = &cobra.Command{
 	Use:   "close",
-	Short: "Close one or more tasks",
+	Short: "Close tasks",
+	Long:  "Close multiple tasks or a single task when --id is provided.",
 	RunE: func(cmd *cobra.Command, _ []string) error {
 		opts, err := resolveAPIConfig()
 		if err != nil {

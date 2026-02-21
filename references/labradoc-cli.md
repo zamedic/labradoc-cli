@@ -136,12 +136,125 @@ Commands:
   - Flags: `--id`, `--out` (default output is `<id>.pdf`).
 
 - `labradoc api files question`
-  - POST `/api/user/files/<id>/question` with `text/plain` body.
-  - Flags: `--id`, `--question`, `--body`, `--body-file` (`-` for stdin), `--out`.
+  - POST `/api/user/files/<id>/question` with `application/json` body.
+  - Flags: `--id`, `--question` (sets JSON field `question`), `--body`, `--body-file` (`-` for stdin), `--out`.
 
 - `labradoc api files search`
-  - POST `/api/user/files` with `text/plain` body.
-  - Flags: `--question`, `--body`, `--body-file` (`-` for stdin), `--out`.
+  - POST `/api/user/files` with `application/json` body (SSE streaming response).
+  - Flags: `--question` (sets JSON field `question`), `--body`, `--body-file` (`-` for stdin), `--out`.
+
+- `labradoc api files fields`
+  - GET `/api/user/files/<id>/fields`.
+  - Flags: `--id`, `--out`.
+
+- `labradoc api files related`
+  - GET `/api/user/files/<id>/related`.
+  - Flags: `--id`, `--out`.
+
+- `labradoc api files reprocess`
+  - GET `/api/user/files/<id>/reprocess`.
+  - Flags: `--id`, `--out`.
+
+- `labradoc api files tasks`
+  - GET `/api/user/files/<id>/tasks`.
+  - Flags: `--id`, `--out`.
+
+- `labradoc api files image`
+  - GET `/api/user/files/<id>/image/<pageNumber>`.
+  - Flags: `--id`, `--page`, `--out`.
+
+- `labradoc api files preview`
+  - GET `/api/user/files/<id>/image/preview/<pageNumber>`.
+  - Flags: `--id`, `--page`, `--out`.
+
+- `labradoc api files archive`
+  - POST `/api/user/files/archive` with JSON body.
+  - Flags: `--id` (single), `--ids` (repeatable), `--out`.
+
+- `labradoc api apikeys list`
+  - GET `/api/user/apikeys`.
+
+- `labradoc api apikeys create`
+  - POST `/api/user/apikeys` with JSON body.
+  - Flags: `--name` (required), `--expires-at` (RFC 3339).
+
+- `labradoc api apikeys revoke`
+  - DELETE `/api/user/apikeys/<keyId>`.
+  - Flags: `--id`.
+
+- `labradoc api user credits`
+  - GET `/api/user/ai/credits`.
+
+- `labradoc api user stats`
+  - GET `/api/user/stats`.
+
+- `labradoc api user language get`
+  - GET `/api/user/preference/language`.
+
+- `labradoc api user language set`
+  - POST `/api/user/preference/language` with JSON body.
+  - Flags: `--language`.
+
+- `labradoc api email addresses`
+  - GET `/api/emailAddresses`.
+
+- `labradoc api email request`
+  - POST `/api/emailAddress` with JSON body.
+  - Flags: `--description`.
+
+- `labradoc api email list`
+  - GET `/api/emails`.
+
+- `labradoc api email body`
+  - GET `/api/email/<id>/<index>`.
+  - Flags: `--id`, `--index`, `--out`.
+
+- `labradoc api google drive status`
+  - GET `/api/google/drive`.
+
+- `labradoc api google drive token`
+  - GET `/api/google/drive/token?scope=...`.
+  - Flags: `--scope`.
+
+- `labradoc api google drive code`
+  - GET `/api/google/drive/code?code=...`.
+  - Flags: `--code`.
+
+- `labradoc api google drive refresh`
+  - GET `/api/google/drive/refresh`.
+
+- `labradoc api google drive revoke`
+  - DELETE `/api/google/drive/token`.
+
+- `labradoc api google gmail status`
+  - GET `/api/google/gmail`.
+
+- `labradoc api google gmail token`
+  - GET `/api/google/gmail/token`.
+
+- `labradoc api google gmail code`
+  - GET `/api/google/gmail/code?code=...`.
+  - Flags: `--code`.
+
+- `labradoc api google gmail revoke`
+  - GET `/api/google/gmail/revoke`.
+
+- `labradoc api microsoft outlook token`
+  - GET `/api/microsoft/outlook/token`.
+
+- `labradoc api microsoft outlook code`
+  - GET `/api/microsoft/outlook/code?code=...`.
+  - Flags: `--code`.
+
+- `labradoc api stripe checkout`
+  - POST `/api/stripe/checkout`.
+
+- `labradoc api stripe pages-checkout`
+  - POST `/api/stripe/pages/checkout`.
+
+- `labradoc api stripe webhook`
+  - POST `/api/stripe/webhook`.
+  - Flags: `--body`, `--body-file` (`-` for stdin).
 
 ## Examples
 
@@ -174,5 +287,5 @@ labradoc api request /api/tasks --method POST --body '{"name":"Example"}'
 Ask a question from stdin:
 
 ```bash
-printf "What is the due date?" | labradoc api files question --id <file-id> --body-file -
+printf '{"question":"What is the due date?"}' | labradoc api files question --id <file-id> --body-file -
 ```
