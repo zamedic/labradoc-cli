@@ -1,8 +1,8 @@
 package cmd
 
 import (
-	"github.com/zamedic/labrador-cli/cmd/api"
-	"github.com/zamedic/labrador-cli/cmd/auth"
+	"github.com/zamedic/labradoc-cli/cmd/api"
+	"github.com/zamedic/labradoc-cli/cmd/auth"
 
 	"github.com/spf13/cobra"
 )

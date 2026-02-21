@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/zamedic/labrador-cli/cmd"
-	"github.com/zamedic/labrador-cli/internal/config"
+	"github.com/zamedic/labradoc-cli/cmd"
+	"github.com/zamedic/labradoc-cli/internal/config"
 )
 
 func main() {

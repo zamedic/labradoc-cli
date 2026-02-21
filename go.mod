@@ -1,4 +1,4 @@
-module github.com/zamedic/labrador-cli
+module github.com/zamedic/labradoc-cli
 
 go 1.26
 

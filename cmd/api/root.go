@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/zamedic/labrador-cli/internal/cli"
+	"github.com/zamedic/labradoc-cli/internal/cli"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"

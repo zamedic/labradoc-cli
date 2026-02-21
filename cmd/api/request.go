@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/zamedic/labrador-cli/internal/cli"
+	"github.com/zamedic/labradoc-cli/internal/cli"
 
 	"github.com/spf13/cobra"
 )

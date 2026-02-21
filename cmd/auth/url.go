@@ -6,7 +6,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/zamedic/labrador-cli/internal/cli"
+	"github.com/zamedic/labradoc-cli/internal/cli"
 
 	"github.com/google/uuid"
 	"github.com/spf13/cobra"
