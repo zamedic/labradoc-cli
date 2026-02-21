@@ -41,4 +41,6 @@ jobs:
         #workdir: # optional, default is .
         # Just install GoReleaser
         #install-only: # optional, default is false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                
