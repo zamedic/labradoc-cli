@@ -8,17 +8,14 @@ metadata: {"owner":"zamedic","repo":"labradoc-cli"}
 
 Labradoc is an AI document intelligence platform that unifies emails, documents, and photos into one searchable system. It provides natural-language search and contextual answers over your own data, supports Gmail and Google Drive integrations, email forwarding, and manual uploads, and emphasizes GDPR-aligned hosting in Germany with strong privacy controls.
 
-Use this skill to operate the `labradoc` CLI with API token authentication. It covers configuration and every available command.
+Use this skill to operate the `labradoc-cli` CLI with API token authentication. It covers configuration and every available command.
 
 ## Install
 
-```bash
-go build -o labradoc .
-```
+Get the latest prebuilt binary from the GitHub Releases page, then place it on your PATH:
 
-```bash
-go install ./...
-```
+https://github.com/zamedic/labradoc-cli/releases
+
 
 ## API Token Auth
 
@@ -59,38 +56,38 @@ ENV vars (dots become underscores)
 ## Raw Request
 
 ```bash
-labradoc api request /api/tasks --method GET
-labradoc api request /api/tasks --method POST --body '{"name":"Example"}'
-labradoc api request /api/tasks --method POST --body-file ./payload.json
+labradoc-cli api request /api/tasks --method GET
+labradoc-cli api request /api/tasks --method POST --body '{"name":"Example"}'
+labradoc-cli api request /api/tasks --method POST --body-file ./payload.json
 ```
 
 ## Tasks
 
 ```bash
-labradoc api tasks list
-labradoc api tasks close --id <task-id>
-labradoc api tasks close --ids <task-id> --ids <task-id>
+labradoc-cli api tasks list
+labradoc-cli api tasks close --id <task-id>
+labradoc-cli api tasks close --ids <task-id> --ids <task-id>
 ```
 
 ## Files
 
 ```bash
-labradoc api files list --status pending --status processed --page-size 50
-labradoc api files upload --file ./document.pdf
-labradoc api files get --id <file-id>
-labradoc api files content --id <file-id> --out content.txt
-labradoc api files ocr --id <file-id> --out ocr.txt
-labradoc api files download --id <file-id> --out original.pdf
-labradoc api files fields --id <file-id>
-labradoc api files related --id <file-id>
-labradoc api files reprocess --id <file-id>
-labradoc api files tasks --id <file-id>
-labradoc api files image --id <file-id> --page 1 --out page-1.png
-labradoc api files preview --id <file-id> --page 1 --out page-1-preview.png
-labradoc api files archive --id <file-id>
-labradoc api files archive --ids <file-id> --ids <file-id>
-labradoc api files question --id <file-id> --body '{"question":"What is the due date?"}'
-labradoc api files search --body '{"question":"Find all invoices from Acme"}'
+labradoc-cli api files list --status pending --status processed --page-size 50
+labradoc-cli api files upload --file ./document.pdf
+labradoc-cli api files get --id <file-id>
+labradoc-cli api files content --id <file-id> --out content.txt
+labradoc-cli api files ocr --id <file-id> --out ocr.txt
+labradoc-cli api files download --id <file-id> --out original.pdf
+labradoc-cli api files fields --id <file-id>
+labradoc-cli api files related --id <file-id>
+labradoc-cli api files reprocess --id <file-id>
+labradoc-cli api files tasks --id <file-id>
+labradoc-cli api files image --id <file-id> --page 1 --out page-1.png
+labradoc-cli api files preview --id <file-id> --page 1 --out page-1-preview.png
+labradoc-cli api files archive --id <file-id>
+labradoc-cli api files archive --ids <file-id> --ids <file-id>
+labradoc-cli api files question --id <file-id> --body '{"question":"What is the due date?"}'
+labradoc-cli api files search --body '{"question":"Find all invoices from Acme"}'
 ```
 
 Note: `files search` returns a Server-Sent Events (SSE) stream.
@@ -98,56 +95,56 @@ Note: `files search` returns a Server-Sent Events (SSE) stream.
 ## API Keys
 
 ```bash
-labradoc api apikeys list
-labradoc api apikeys create --name "CI token" --expires-at 2026-06-01T00:00:00Z
-labradoc api apikeys revoke --id <key-id>
+labradoc-cli api apikeys list
+labradoc-cli api apikeys create --name "CI token" --expires-at 2026-06-01T00:00:00Z
+labradoc-cli api apikeys revoke --id <key-id>
 ```
 
 ## User
 
 ```bash
-labradoc api user credits
-labradoc api user stats
-labradoc api user language get
-labradoc api user language set --language en
+labradoc-cli api user credits
+labradoc-cli api user stats
+labradoc-cli api user language get
+labradoc-cli api user language set --language en
 ```
 
 ## Email
 
 ```bash
-labradoc api email addresses
-labradoc api email request --description "Inbound invoices"
-labradoc api email list
-labradoc api email body --id <email-id> --index 1 --out body.eml
+labradoc-cli api email addresses
+labradoc-cli api email request --description "Inbound invoices"
+labradoc-cli api email list
+labradoc-cli api email body --id <email-id> --index 1 --out body.eml
 ```
 
 ## Google Integrations
 
 ```bash
-labradoc api google drive status
-labradoc api google drive token --scope "https://www.googleapis.com/auth/drive.readonly"
-labradoc api google drive code --code <code>
-labradoc api google drive refresh
-labradoc api google drive revoke
-labradoc api google gmail status
-labradoc api google gmail token
-labradoc api google gmail code --code <code>
-labradoc api google gmail revoke
+labradoc-cli api google drive status
+labradoc-cli api google drive token --scope "https://www.googleapis.com/auth/drive.readonly"
+labradoc-cli api google drive code --code <code>
+labradoc-cli api google drive refresh
+labradoc-cli api google drive revoke
+labradoc-cli api google gmail status
+labradoc-cli api google gmail token
+labradoc-cli api google gmail code --code <code>
+labradoc-cli api google gmail revoke
 ```
 
 ## Microsoft Integrations
 
 ```bash
-labradoc api microsoft outlook token
-labradoc api microsoft outlook code --code <code>
+labradoc-cli api microsoft outlook token
+labradoc-cli api microsoft outlook code --code <code>
 ```
 
 ## Billing (Stripe)
 
 ```bash
-labradoc api stripe checkout
-labradoc api stripe pages-checkout
-labradoc api stripe webhook --body-file ./stripe-event.json
+labradoc-cli api stripe checkout
+labradoc-cli api stripe pages-checkout
+labradoc-cli api stripe webhook --body-file ./stripe-event.json
 ```
 
 ## Troubleshooting
