@@ -28,6 +28,37 @@ var (
 	filesPageNumber int
 )
 
+var fileStatusOptions = []string{
+	"New",
+	"multipart",
+	"googleDocument",
+	"Check_Duplicate",
+	"detectFileType",
+	"htmlToPdf",
+	"preview",
+	"ocr",
+	"process_image",
+	"embedding",
+	"name_predictor",
+	"document_type",
+	"extraction",
+	"task",
+	"completed",
+	"ignored",
+	"error",
+	"not_supported",
+	"on_hold",
+	"duplicated",
+}
+
+var fileStatusSet = func() map[string]struct{} {
+	set := make(map[string]struct{}, len(fileStatusOptions))
+	for _, status := range fileStatusOptions {
+		set[status] = struct{}{}
+	}
+	return set
+}()
+
 var filesListCmd = &cobra.Command{
 	Use:   "list",
 	Short: "List files",
@@ -43,9 +74,14 @@ var filesListCmd = &cobra.Command{
 
 		query := url.Values{}
 		for _, s := range filesStatus {
-			if strings.TrimSpace(s) != "" {
-				query.Add("status", strings.TrimSpace(s))
+			status := strings.TrimSpace(s)
+			if status == "" {
+				continue
 			}
+			if _, ok := fileStatusSet[status]; !ok {
+				return fmt.Errorf("invalid status %q; valid values: %s", status, strings.Join(fileStatusOptions, ", "))
+			}
+			query.Add("status", status)
 		}
 		if filesPageSize > 0 {
 			query.Set("pageSize", fmt.Sprintf("%d", filesPageSize))
@@ -346,7 +382,7 @@ func init() {
 	filesCmd.AddCommand(filesImageCmd)
 	filesCmd.AddCommand(filesPreviewCmd)
 
-	filesListCmd.Flags().StringSliceVar(&filesStatus, "status", nil, "Filter by status (repeatable)")
+	filesListCmd.Flags().StringSliceVar(&filesStatus, "status", nil, "Filter by status (repeatable). Valid values: "+strings.Join(fileStatusOptions, ", "))
 	filesListCmd.Flags().IntVar(&filesPageSize, "page-size", 0, "Page size")
 	filesListCmd.Flags().IntVar(&filesPageNumber, "page-number", 0, "Page number")
 

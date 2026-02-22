@@ -114,6 +114,7 @@ Commands:
 - `labradoc api files list`
   - GET `/api/user/files` with optional query params.
   - Flags: `--status` (repeatable), `--page-size`, `--page-number`.
+  - Valid `--status` values: `New`, `multipart`, `googleDocument`, `Check_Duplicate`, `detectFileType`, `htmlToPdf`, `preview`, `ocr`, `process_image`, `embedding`, `name_predictor`, `document_type`, `extraction`, `task`, `completed`, `ignored`, `error`, `not_supported`, `on_hold`, `duplicated`.
 
 - `labradoc api files upload`
   - PUT `/api/user/files` with multipart form.

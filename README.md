@@ -118,7 +118,7 @@ labradoc api tasks close --ids <task-id> --ids <task-id>
 Files:
 
 ```bash
-labradoc api files list --status pending --status processed --page-size 50
+labradoc api files list --status New --status completed --page-size 50
 labradoc api files upload --file ./document.pdf
 labradoc api files get --id <file-id>
 labradoc api files content --id <file-id> --out content.txt
@@ -134,6 +134,8 @@ labradoc api files archive --id <file-id>
 labradoc api files question --id <file-id> --body '{"question":"What is the due date?"}'
 labradoc api files search --body '{"question":"Find all invoices from Acme"}'
 ```
+
+Valid `--status` values: `New`, `multipart`, `googleDocument`, `Check_Duplicate`, `detectFileType`, `htmlToPdf`, `preview`, `ocr`, `process_image`, `embedding`, `name_predictor`, `document_type`, `extraction`, `task`, `completed`, `ignored`, `error`, `not_supported`, `on_hold`, `duplicated`.
 
 Note: `files search` returns a Server-Sent Events (SSE) stream.
 
