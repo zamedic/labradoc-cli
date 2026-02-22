@@ -8,7 +8,7 @@ import (
 )
 
 var RootCmd = cobra.Command{
-	Use: "labradoc",
+	Use: "labradoc-cli",
 }
 
 func Execute() {
