@@ -1,7 +1,6 @@
 ---
 name: labradoc-cli
-description: Use the Labradoc CLI with API token auth to call Labradoc endpoints (tasks, files, users, API keys, email, integrations, billing) and run raw API requests.
-metadata: {"owner":"zamedic","repo":"labradoc-cli"}
+description: Use the Labradoc CLI to authenticate and call Labradoc API endpoints (tasks, files, users, API keys, email, Google/Microsoft integrations, billing) from OpenClaw. Trigger when the user wants to perform Labradoc operations, manage documents/tasks, or interact with the Labradoc API via command line.
 ---
 
 # Labradoc CLI
@@ -16,8 +15,7 @@ Get the latest prebuilt binary from the GitHub Releases page, then place it on y
 
 https://github.com/zamedic/labradoc-cli/releases
 
-
-## API Token Auth
+## Configuration
 
 The CLI sends the API token as the `X-API-Key` header.
 
@@ -52,6 +50,29 @@ ENV vars (dots become underscores)
 --api-token   API token (X-API-Key)
 --timeout     HTTP timeout (default 30s)
 ```
+
+## Authentication (OAuth)
+
+API token auth is preferred, but OAuth is available:
+
+```bash
+# Login via browser
+eval labradoc-cli auth login --api-url https://api.labradoc.eu
+
+# Check auth status
+labradoc-cli auth status --api-url https://labradoc.eu
+
+# Get current token
+labradoc-cli auth token
+
+# Refresh token
+labradoc-cli auth refresh
+
+# Logout
+labradoc-cli auth logout
+```
+
+When using OAuth, pass `--use-auth-token` to API commands instead of `--api-token`.
 
 ## Raw Request
 
@@ -120,26 +141,9 @@ labradoc-cli api email list
 labradoc-cli api email body --id <email-id> --index 1 --out body.eml
 ```
 
-## Google Integrations
+## Integrations
 
-```bash
-labradoc-cli api google drive status
-labradoc-cli api google drive token --scope "https://www.googleapis.com/auth/drive.readonly"
-labradoc-cli api google drive code --code <code>
-labradoc-cli api google drive refresh
-labradoc-cli api google drive revoke
-labradoc-cli api google gmail status
-labradoc-cli api google gmail token
-labradoc-cli api google gmail code --code <code>
-labradoc-cli api google gmail revoke
-```
-
-## Microsoft Integrations
-
-```bash
-labradoc-cli api microsoft outlook token
-labradoc-cli api microsoft outlook code --code <code>
-```
+See [references/integrations.md](references/integrations.md) for Google Drive, Gmail, and Microsoft Outlook commands.
 
 ## Billing (Stripe)
 
@@ -147,6 +151,14 @@ labradoc-cli api microsoft outlook code --code <code>
 labradoc-cli api stripe checkout
 labradoc-cli api stripe pages-checkout
 labradoc-cli api stripe webhook --body-file ./stripe-event.json
+```
+
+## Wrapper Script
+
+A convenience wrapper is provided at `scripts/run-labradoc.sh`. It checks that the `labradoc-cli` binary is on PATH and forwards all arguments:
+
+```bash
+./scripts/run-labradoc.sh api tasks list
 ```
 
 ## Troubleshooting
