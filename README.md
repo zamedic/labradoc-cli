@@ -56,6 +56,12 @@ Tokens and PKCE state are stored under the user config directory:
 
 ## Authentication
 
+**Preferred method:** API Token authentication via https://labradoc.eu/profile
+
+Generate an API token from your Labradoc profile page and set it via `--api-token`, `API_TOKEN` env var, or `api_token` in `labrador.yaml`.
+
+OAuth is available as an alternative if you prefer browser-based authentication:
+
 Default auth settings (only override when required):
 
 - Auth URL: `https://auth.labradoc.eu`

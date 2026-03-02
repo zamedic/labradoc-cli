@@ -19,6 +19,8 @@ https://github.com/zamedic/labradoc-cli/releases
 
 The CLI sends the API token as the `X-API-Key` header.
 
+**Preferred authentication method:** API Token from your Labradoc profile at https://labradoc.eu/profile
+
 Set the token using one of the following (highest wins):
 
 ```text
