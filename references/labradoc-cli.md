@@ -17,11 +17,11 @@ Config is loaded from the current working directory:
 
 Common config keys and env vars:
 
-- `api_url` -> `API_URL`
-- `api_token` -> `API_TOKEN`
-- `keycloak.url` -> `KEYCLOAK_URL`
-- `keycloak.realm` -> `KEYCLOAK_REALM`
-- `log.debug` -> `LOG_DEBUG`
+- `api_url` -> `LABRADOC_API_URL`
+- `api_token` -> `LABRADOC_API_TOKEN`
+- `keycloak.url` -> `LABRADOC_KEYCLOAK_URL`
+- `keycloak.realm` -> `LABRADOC_KEYCLOAK_REALM`
+- `log.debug` -> `LABRADOC_LOG_DEBUG`
 - `ENVIRONMENT` selects the env-specific config file
 
 Auth state files are stored under the OS user config directory in `labradoc/cli`:
@@ -262,7 +262,7 @@ Commands:
 API token usage:
 
 ```bash
-labradoc api tasks list --api-token "$API_TOKEN"
+labradoc api tasks list --api-token "$LABRADOC_API_TOKEN"
 ```
 
 OAuth flow (local callback):

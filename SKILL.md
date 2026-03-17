@@ -25,7 +25,7 @@ Set the token using one of the following (highest wins):
 
 ```text
 --api-token flag
-API_TOKEN env var
+LABRADOC_API_TOKEN env var
 labrador.yaml (api_token)
 ```
 
@@ -33,7 +33,7 @@ Optional base URL override:
 
 ```text
 --api-url flag
-API_URL env var
+LABRADOC_API_URL env var
 labrador.yaml (api_url)
 ```
 
@@ -166,6 +166,6 @@ A convenience wrapper is provided at `scripts/run-labradoc.sh`. It checks that t
 ## Troubleshooting
 
 ```text
-Missing token: provide --api-token, API_TOKEN, or api_token in labrador.yaml
+Missing token: provide --api-token, LABRADOC_API_TOKEN, or api_token in labrador.yaml
 401/403: confirm API token and --api-url
 ```

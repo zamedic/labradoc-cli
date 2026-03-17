@@ -42,11 +42,11 @@ log:
 
 Common environment variables (override config defaults only when needed):
 
-- `API_URL`
-- `API_TOKEN`
-- `KEYCLOAK_URL`
-- `KEYCLOAK_REALM`
-- `LOG_DEBUG`
+- `LABRADOC_API_URL`
+- `LABRADOC_API_TOKEN`
+- `LABRADOC_KEYCLOAK_URL`
+- `LABRADOC_KEYCLOAK_REALM`
+- `LABRADOC_LOG_DEBUG`
 - `ENVIRONMENT`
 
 Tokens and PKCE state are stored under the user config directory:
@@ -58,7 +58,7 @@ Tokens and PKCE state are stored under the user config directory:
 
 **Preferred method:** API Token authentication via https://labradoc.eu/profile
 
-Generate an API token from your Labradoc profile page and set it via `--api-token`, `API_TOKEN` env var, or `api_token` in `labrador.yaml`.
+Generate an API token from your Labradoc profile page and set it via `--api-token`, `LABRADOC_API_TOKEN` env var, or `api_token` in `labrador.yaml`.
 
 OAuth is available as an alternative if you prefer browser-based authentication:
 
