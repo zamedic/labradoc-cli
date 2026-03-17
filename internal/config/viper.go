@@ -27,6 +27,7 @@ func InitConfig() {
 	viper.MergeInConfig() // Use MergeInConfig for override
 
 	// Environment variables override everything
+	viper.SetEnvPrefix("LABRADOC")
 	viper.AutomaticEnv()
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 
