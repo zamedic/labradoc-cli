@@ -163,6 +163,20 @@ A convenience wrapper is provided at `scripts/run-labradoc.sh`. It checks that t
 ./scripts/run-labradoc.sh api tasks list
 ```
 
+## Output Behaviour
+
+| Condition | stdout | stderr | Exit code |
+|-----------|--------|--------|-----------|
+| Success | Response body (JSON or binary) | — | 0 |
+| HTTP 4xx / 5xx | — | Response body (error JSON) | 1 |
+| CLI error (missing flag, etc.) | — | Error message | 1 |
+
+**Parsing rules for agents:**
+- Parse stdout only on exit code 0.
+- On exit code 1, read stderr for the error detail (may include the server's JSON error body).
+- `files image`, `files preview`, `files download`, `files content`, `files ocr` return binary data; always use `--out <file>` for these commands.
+- `files search` returns a **Server-Sent Events (SSE)** stream on stdout; parse it as SSE, not plain JSON.
+
 ## Troubleshooting
 
 ```text

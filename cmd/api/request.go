@@ -78,6 +78,13 @@ var requestCmd = &cobra.Command{
 		}
 		defer resp.Body.Close()
 
+		if resp.StatusCode >= 400 {
+			body, _ := io.ReadAll(resp.Body)
+			if len(body) > 0 {
+				fmt.Fprintf(os.Stderr, "%s\n", body)
+			}
+			return fmt.Errorf("request failed: %s", resp.Status)
+		}
 		var out io.Writer = os.Stdout
 		if requestOut != "" {
 			f, err := os.Create(requestOut)
@@ -87,13 +94,8 @@ var requestCmd = &cobra.Command{
 			defer f.Close()
 			out = f
 		}
-		if _, err := io.Copy(out, resp.Body); err != nil {
-			return err
-		}
-		if resp.StatusCode >= 400 {
-			return fmt.Errorf("request failed: %s", resp.Status)
-		}
-		return nil
+		_, err = io.Copy(out, resp.Body)
+		return err
 	},
 }
 
