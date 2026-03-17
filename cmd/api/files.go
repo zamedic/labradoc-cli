@@ -99,13 +99,7 @@ var filesListCmd = &cobra.Command{
 			return err
 		}
 		defer resp.Body.Close()
-		if _, err := io.Copy(os.Stdout, resp.Body); err != nil {
-			return err
-		}
-		if resp.StatusCode >= 400 {
-			return fmt.Errorf("request failed: %s", resp.Status)
-		}
-		return nil
+		return writeResponse(resp, "")
 	},
 }
 
@@ -156,13 +150,7 @@ var filesUploadCmd = &cobra.Command{
 			return err
 		}
 		defer resp.Body.Close()
-		if _, err := io.Copy(os.Stdout, resp.Body); err != nil {
-			return err
-		}
-		if resp.StatusCode >= 400 {
-			return fmt.Errorf("request failed: %s", resp.Status)
-		}
-		return nil
+		return writeResponse(resp, "")
 	},
 }
 
@@ -520,6 +508,13 @@ func simpleDelete(cmd *cobra.Command, path string, outPath string) error {
 }
 
 func writeResponse(resp *http.Response, outPath string) error {
+	if resp.StatusCode >= 400 {
+		body, _ := io.ReadAll(resp.Body)
+		if len(body) > 0 {
+			fmt.Fprintf(os.Stderr, "%s\n", body)
+		}
+		return fmt.Errorf("request failed: %s", resp.Status)
+	}
 	var out io.Writer = os.Stdout
 	if outPath != "" {
 		f, err := os.Create(outPath)
@@ -529,11 +524,6 @@ func writeResponse(resp *http.Response, outPath string) error {
 		defer f.Close()
 		out = f
 	}
-	if _, err := io.Copy(out, resp.Body); err != nil {
-		return err
-	}
-	if resp.StatusCode >= 400 {
-		return fmt.Errorf("request failed: %s", resp.Status)
-	}
-	return nil
+	_, err := io.Copy(out, resp.Body)
+	return err
 }

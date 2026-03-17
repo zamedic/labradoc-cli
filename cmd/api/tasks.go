@@ -34,13 +34,15 @@ var tasksListCmd = &cobra.Command{
 			return err
 		}
 		defer resp.Body.Close()
-		if _, err := io.Copy(os.Stdout, resp.Body); err != nil {
-			return err
-		}
 		if resp.StatusCode >= 400 {
+			body, _ := io.ReadAll(resp.Body)
+			if len(body) > 0 {
+				fmt.Fprintf(os.Stderr, "%s\n", body)
+			}
 			return fmt.Errorf("request failed: %s", resp.Status)
 		}
-		return nil
+		_, err = io.Copy(os.Stdout, resp.Body)
+		return err
 	},
 }
 
